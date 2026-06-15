@@ -57,10 +57,7 @@ class Planner(Agent):
         state_info = state.get_state_info()
 
         if len(state.memory) == 1: # if there is no memory before, it means it is the first execution
-            if self.model == 'gpt-4o':
-                history.append({"role": "system", "content": f"{role_prompt}{self.description}"})
-            elif self.model == 'o1-mini':
-                history.append({"role": "user", "content": f"{role_prompt}{self.description}"})
+            history = self._initial_history(f"{role_prompt}{self.description}")
             # Round 0
             task = PROMPT_PLANNER_TASK.format(phase_name=state.phase)
             user_rules = state.generate_rules()

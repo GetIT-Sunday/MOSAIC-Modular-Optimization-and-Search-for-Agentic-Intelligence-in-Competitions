@@ -71,7 +71,7 @@ class Summarizer(Agent):
                     if len(chosen_images) == num_of_chosen_images:
                         break
 
-        image_to_text_tool = ImageToTextTool(model='gpt-4o', type='api')
+        image_to_text_tool = ImageToTextTool(model=os.getenv('AUTOKAGGLE_IMAGE_MODEL', self.model), type='api')
         images_to_descriptions = image_to_text_tool.image_to_text(state, chosen_images)
         insight_from_visualization = ""
         for image, description in images_to_descriptions.items():
@@ -105,7 +105,7 @@ class Summarizer(Agent):
             return {self.role: {"history": [], "report": ""}}
 
         history = []
-        history.append({"role": "system", "content": f"{role_prompt} {self.description}"})
+        history = self._initial_history(f"{role_prompt} {self.description}")
 
         # read background_info and plan
         background_info = state.background_info

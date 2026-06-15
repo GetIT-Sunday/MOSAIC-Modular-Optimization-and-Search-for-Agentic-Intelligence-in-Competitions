@@ -72,6 +72,11 @@ PROMPT_DEVELOPER_CONSTRAINTS = '''
 1. General Rules:
    - Use `print()` for outputting values.
    - Avoid writing `assert` statements.
+   - Return exactly one complete fenced Python block using ```python ... ```.
+   - The Python block must be self-contained for the current phase and runnable from any working directory.
+   - Do NOT output partial patches, fragments, or code that depends on variables created in a previous answer.
+   - Do NOT use notebook-only helpers such as `display()`.
+   - Do NOT read `train.csv`, `test.csv`, or other data files through relative paths. Always join file names to `{competition_path}`.
 
 2. Visualization:
    - Use `plt.close()` after saving each image.

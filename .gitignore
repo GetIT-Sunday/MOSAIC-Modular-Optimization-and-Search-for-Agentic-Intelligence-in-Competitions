@@ -1,0 +1,17 @@
+.env
+autokaggle_config.json
+api_key.txt
+.venv/
+.pycache/
+__pycache__/
+.pytest_cache/
+.agents/
+.aris/
+AGENTS.md
+multi_agents/db/
+multi_agents/experiments_history/
+multi_agents/competition_memory/
+multi_agents/competition/
+runs/
+*.zip
+*.log

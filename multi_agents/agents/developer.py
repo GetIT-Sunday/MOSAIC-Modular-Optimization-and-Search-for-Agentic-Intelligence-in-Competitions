@@ -179,8 +179,8 @@ class Developer(Agent):
             timeout = 600
             timeout_info = "Your code is running out of time, please consider resource availability or other factors."
         try:
-            result = subprocess.run(['python3', '-W', 'ignore', path_to_run_code], 
-                                    capture_output=True, text=True, timeout=timeout, 
+            result = subprocess.run([sys.executable, '-W', 'ignore', path_to_run_code],
+                                    capture_output=True, text=True, timeout=timeout,
                                     preexec_fn=os.setsid)
         except subprocess.TimeoutExpired:
             logger.info("Code execution timed out.")
@@ -229,7 +229,6 @@ class Developer(Agent):
                 f.write("")
 
         return error_flag
-    
     def _save_all_error_messages(self, state: State):
         if self.all_error_messages:
             base_filename = f'{state.restore_dir}/all_error_messages.txt'
@@ -303,7 +302,7 @@ class Developer(Agent):
             output_messages = ""
 
         logger.info("Start debugging the code.")
-        debug_tool = DebugTool(model='gpt-4o', type='api')
+        debug_tool = DebugTool(model=os.getenv('AUTOKAGGLE_DEBUG_MODEL', self.model), type='api')
         if error_flag:
             tools, tool_names = self._get_tools(state)
             reply, single_round_debug_history = debug_tool.debug_code_with_error(state, copy.deepcopy(self.all_error_messages), output_messages, previous_code, wrong_code, error_messages, tools, tool_names)
@@ -354,18 +353,12 @@ class Developer(Agent):
         plan = state.memory[-1]["planner"]["plan"] # the format of plan is markdown
 
         if len(state.memory) == 1: # if there is no memory before, it means it is the first execution
-            if self.model == 'gpt-4o':
-                history.append({"role": "system", "content": f"{role_prompt}{self.description}\n when you are writing code, you should follow the plan and the following constraints.\n{constraints}"})
-            elif self.model == 'o1-mini':
-                history.append({"role": "user", "content": f"{role_prompt}{self.description}\n when you are writing code, you should follow the plan and the following constraints.\n{constraints}"})
+            history = self._initial_history(f"{role_prompt}{self.description}\n when you are writing code, you should follow the plan and the following constraints.\n{constraints}")
         else:
             self.description = "You are skilled at writing and implementing code according to plan." \
                             "You have advanced reasoning abilities and can improve your answers through reflection."
             experience_with_suggestion = self._gather_experience_with_suggestion(state)
-            if self.model == 'gpt-4o':
-                history.append({"role": "system", "content": f"{role_prompt}{self.description}\n when you are writing code, you should follow the plan and the following constraints.\n{constraints}"})
-            elif self.model == 'o1-mini':
-                history.append({"role": "user", "content": f"{role_prompt}{self.description}\n when you are writing code, you should follow the plan and the following constraints.\n{constraints}"})
+            history = self._initial_history(f"{role_prompt}{self.description}\n when you are writing code, you should follow the plan and the following constraints.\n{constraints}")
 
 
         while round <= max_tries:
@@ -470,4 +463,3 @@ class Developer(Agent):
                 "status": execution_flag
             }
         }
-    

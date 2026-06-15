@@ -1,0 +1,35 @@
+{
+  "project": {
+    "name": "MOSAIC",
+    "control_plane": "local_mac",
+    "execution_backend": "remote_linux"
+  },
+  "remote": {
+    "ssh_alias": "dev",
+    "workspace": "/home/dataset-local/data_local/wengchuangchuang/BioLLM/Mac",
+    "project_subdir": "workspaces/MOSAIC",
+    "conda_env": "mac"
+  },
+  "llm": {
+    "provider": "xiaomi_mimo",
+    "openai_base_url": "https://token-plan-sgp.xiaomimimo.com/v1",
+    "anthropic_base_url": "https://token-plan-sgp.xiaomimimo.com/anthropic",
+    "api_key_env": "AUTOKAGGLE_API_KEY",
+    "api_key_file": "api_key.txt",
+    "planner_model": "mimo-v2.5-pro",
+    "coding_model": "mimo-v2.5",
+    "cheap_model": "mimo-v2.5"
+  },
+  "kaggle": {
+    "auth_mode": "oauth_or_token",
+    "remote_config_dir": ".kaggle",
+    "auto_submit": false
+  },
+  "safety": {
+    "enforce_remote_workspace": true,
+    "allow_paths": [
+      "/home/dataset-local/data_local/wengchuangchuang/BioLLM/Mac"
+    ],
+    "never_render_secret_values": true
+  }
+}

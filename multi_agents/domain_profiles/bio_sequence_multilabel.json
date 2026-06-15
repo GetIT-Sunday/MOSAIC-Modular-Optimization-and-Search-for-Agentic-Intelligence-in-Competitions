@@ -1,0 +1,45 @@
+{
+  "name": "bio_sequence_multilabel",
+  "description": "Protein or biological sequence competition profile with sparse multi-label ontology-style predictions.",
+  "task_families": ["sequence_multilabel", "ontology_multilabel"],
+  "input_files": {
+    "required_any": [
+      ["train_sequences.fasta", "test_sequences.fasta"],
+      ["train.csv", "test.csv"]
+    ],
+    "optional": [
+      "ontology.obo",
+      "go-basic.obo",
+      "taxonomy.tsv",
+      "sample_submission.csv",
+      "external_embeddings/"
+    ]
+  },
+  "phases": [
+    "Competition Understanding",
+    "Data and Schema Audit",
+    "Metric and Submission Analysis",
+    "Baseline Ladder Planning",
+    "Experiment Implementation",
+    "Submission Calibration and Gate"
+  ],
+  "baseline_ladder": [
+    "label_frequency_baseline",
+    "sequence_length_and_taxonomy_baseline",
+    "nearest_neighbor_transfer",
+    "pretrained_embedding_linear_model",
+    "embedding_mlp",
+    "ontology_aware_ensemble"
+  ],
+  "submission_gate": {
+    "checks": [
+      "required_columns",
+      "valid_target_ids",
+      "valid_label_ids",
+      "score_range",
+      "duplicate_pair_check",
+      "ontology_closure_when_applicable",
+      "output_size_budget"
+    ]
+  }
+}

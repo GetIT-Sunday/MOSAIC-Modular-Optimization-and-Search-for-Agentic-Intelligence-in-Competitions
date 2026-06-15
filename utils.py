@@ -5,6 +5,7 @@ import subprocess
 import re
 import shutil
 import json
+from typing import Optional
 
 DIR = os.path.dirname(os.path.abspath(__file__))
 PREFIX_STRONG_BASELINE = f'{DIR}/strong_baseline/competition'
@@ -45,7 +46,17 @@ def multi_chat(api_handler: APIHandler, prompt, history=None, max_completion_tok
     
     return reply, history
 
-def read_image(prompt, image_path):
+def _get_configured_model(key: str, default: str) -> str:
+    env_model = os.getenv(f'AUTOKAGGLE_{key.upper()}_MODEL')
+    if env_model:
+        return env_model.replace('_', '-')
+    try:
+        config = load_config(f'{PREFIX_MULTI_AGENTS}/config.json')
+        return config.get('llm_models', {}).get(key, default).replace('_', '-')
+    except Exception:
+        return default
+
+def read_image(prompt, image_path, model: Optional[str] = None):
     """
     Read the image and return the response.
     """
@@ -56,7 +67,7 @@ def read_image(prompt, image_path):
     
     # Getting the base64 string
     base64_image = encode_image(image_path)
-    api_handler = APIHandler('gpt-4o')
+    api_handler = APIHandler(model or _get_configured_model('ImageToText', 'gpt-4o'))
     messages=[
         {"role": "system", "content": "You are a professional data analyst."},
         {

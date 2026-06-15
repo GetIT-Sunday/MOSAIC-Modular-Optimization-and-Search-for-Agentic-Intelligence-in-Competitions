@@ -5,7 +5,7 @@ competitions=("titanic" "spaceship_titanic" "ghouls_goblins_and_ghosts_boo" "hou
 start_run=1
 end_run=5
 dest_dir_param="all_tools"
-model="gpt_4o"
+model="config"
 
 run_experiment() {
     competition=$1

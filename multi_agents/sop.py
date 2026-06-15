@@ -14,7 +14,7 @@ from state import State
 class SOP:
     def __init__(self, competition: str, model: str):
         self.competition = competition
-        self.model = model.replace("_", "-")
+        self.model = model.replace("_", "-") if model else "config"
         self.state_records = []
         self.current_state = None
         self.config = self._load_configuration()
@@ -24,20 +24,44 @@ class SOP:
         return {
             'max_iterations': 3,
             'phases': config['phases'],
-            'phase_to_iterations': config['phase_to_iterations']
+            'phase_to_iterations': config['phase_to_iterations'],
+            'llm_models': config.get('llm_models', {})
         }
 
+    def _model_for_agent(self, agent_name: str) -> str:
+        env_name = f"AUTOKAGGLE_{agent_name.upper()}_MODEL"
+        env_model = os.getenv(env_name)
+        if env_model:
+            return env_model.replace("_", "-")
+
+        configured_model = self.config['llm_models'].get(agent_name)
+        if configured_model:
+            return configured_model.replace("_", "-")
+
+        defaults = {
+            "Reader": "gpt-4o-mini",
+            "Planner": "gpt-4o",
+            "Developer": "gpt-4o",
+            "Reviewer": "gpt-4o-mini",
+            "Summarizer": "gpt-4o-mini",
+        }
+        return defaults[agent_name]
+
     def _create_agent(self, agent_name: str):
+        model = self._model_for_agent(agent_name)
+        if agent_name == "Planner" and self.model not in {"config", "default"}:
+            model = self.model
+
         if agent_name == "Reader":
-            agent = Reader('gpt-4o-mini', 'api')
+            agent = Reader(model, 'api')
         elif agent_name == "Planner":
-            agent = Planner(self.model, 'api')
+            agent = Planner(model, 'api')
         elif agent_name == "Developer":
-            agent = Developer('gpt-4o', 'api')
+            agent = Developer(model, 'api')
         elif agent_name == "Reviewer":
-            agent = Reviewer('gpt-4o-mini', 'api')
+            agent = Reviewer(model, 'api')
         elif agent_name == "Summarizer":
-            agent = Summarizer('gpt-4o-mini', 'api')
+            agent = Summarizer(model, 'api')
         else:
             return None
         return agent

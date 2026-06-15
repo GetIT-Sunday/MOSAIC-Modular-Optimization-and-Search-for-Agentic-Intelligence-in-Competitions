@@ -1,0 +1,34 @@
+{
+  "name": "tabular_classic",
+  "description": "Classic CSV-based tabular classification or regression competition profile.",
+  "task_families": ["binary_classification", "multiclass_classification", "regression"],
+  "input_files": {
+    "required": ["train.csv", "test.csv", "sample_submission.csv", "overview.txt"],
+    "optional": ["data_description.txt"]
+  },
+  "phases": [
+    "Understand Background",
+    "Preliminary Exploratory Data Analysis",
+    "Data Cleaning",
+    "In-depth Exploratory Data Analysis",
+    "Feature Engineering",
+    "Model Building, Validation, and Prediction"
+  ],
+  "baseline_ladder": [
+    "sample_submission_baseline",
+    "target_frequency_or_mean_baseline",
+    "sklearn_linear_baseline",
+    "random_forest_baseline",
+    "lightgbm_or_catboost_baseline",
+    "cross_validated_ensemble"
+  ],
+  "submission_gate": {
+    "checks": [
+      "required_columns",
+      "row_count_matches_test",
+      "no_missing_predictions",
+      "score_or_label_range",
+      "duplicate_id_check"
+    ]
+  }
+}

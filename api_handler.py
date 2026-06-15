@@ -32,15 +32,41 @@ class APISettings:
     def timeout(self) -> int:
         return (self.max_completion_tokens // 1000 + 1) * 30
 
+def _load_dotenv(path: str = f'{DIR}/.env') -> None:
+    if not os.path.exists(path):
+        return
+    with open(path, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#') or '=' not in line:
+                continue
+            key, value = line.split('=', 1)
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+            os.environ.setdefault(key, value)
+
 def load_api_config() -> Tuple[str, Optional[str]]:
+    _load_dotenv()
+    api_key = os.getenv('AUTOKAGGLE_API_KEY') or os.getenv('OPENAI_API_KEY')
+    base_url = os.getenv('AUTOKAGGLE_BASE_URL') or os.getenv('OPENAI_BASE_URL')
+    if api_key:
+        return api_key, base_url
+
+    api_key_file = os.getenv('AUTOKAGGLE_API_KEY_FILE', API_KEY_FILE)
     try:
-        with open(API_KEY_FILE, 'r') as f:
-            api_config = f.readlines()
-        api_key = api_config[0].strip()
-        base_url = api_config[1].strip() if len(api_config) > 1 else None
+        with open(api_key_file, 'r', encoding='utf-8') as f:
+            api_config = [
+                line.strip()
+                for line in f
+                if line.strip() and not line.lstrip().startswith('#')
+            ]
+        api_key = api_config[0]
+        base_url = api_config[1] if len(api_config) > 1 else base_url
+        if api_key in {'YOUR_API_KEY_HERE', 'your_api_key'}:
+            raise ValueError(f"API key placeholder found in {api_key_file}")
         return api_key, base_url
     except FileNotFoundError:
-        raise ValueError(f"API key file not found: {API_KEY_FILE}")
+        raise ValueError(f"API key file not found: {api_key_file}")
 
 def generate_response(client: openai.OpenAI, model: str, messages: List[Dict[str, str]], 
                       settings: APISettings, response_type: str) -> Any:
@@ -52,17 +78,22 @@ def generate_response(client: openai.OpenAI, model: str, messages: List[Dict[str
 
     try:
         if response_type == 'text':
-            response = client.chat.completions.create(
+            request_args = dict(
                 messages=messages,
                 model=model,
                 temperature=settings.temperature,
-                max_completion_tokens=settings.max_completion_tokens,
                 top_p=settings.top_p,
                 frequency_penalty=settings.frequency_penalty,
                 presence_penalty=settings.presence_penalty,
                 stop=settings.stop,
                 timeout=settings.timeout,
             )
+            token_param = os.getenv('AUTOKAGGLE_TOKEN_PARAM', 'max_completion_tokens')
+            if token_param == 'max_tokens':
+                request_args['max_tokens'] = settings.max_completion_tokens
+            else:
+                request_args['max_completion_tokens'] = settings.max_completion_tokens
+            response = client.chat.completions.create(**request_args)
         elif response_type == 'image':
             response = client.chat.completions.create(
                 messages=messages,

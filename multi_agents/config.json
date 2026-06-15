@@ -2,6 +2,16 @@
     "user_interaction": {
         "plan": "False"
     },
+    "llm_models": {
+        "Reader": "mimo-v2.5",
+        "Planner": "mimo-v2.5-pro",
+        "Developer": "mimo-v2.5",
+        "Reviewer": "mimo-v2.5",
+        "Summarizer": "mimo-v2.5",
+        "ImageToText": "mimo-v2.5",
+        "Debug": "mimo-v2.5",
+        "Embedding": "text-embedding-3-large"
+    },
     "phases": ["Understand Background", "Preliminary Exploratory Data Analysis", "Data Cleaning", 
                 "In-depth Exploratory Data Analysis", "Feature Engineering", "Model Building, Validation, and Prediction"],
     "phase_to_agents": {

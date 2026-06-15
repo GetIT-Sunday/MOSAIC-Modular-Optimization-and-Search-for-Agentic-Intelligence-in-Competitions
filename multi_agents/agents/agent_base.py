@@ -35,6 +35,23 @@ class Agent:
         self.model = model
         logger.info(f'Agent {self.role} is created with model {model}.')
 
+    def _supports_system_role(self) -> bool:
+        return self.model not in {'o1-mini'}
+
+    def _initial_history(self, content: str) -> List[Dict[str, str]]:
+        role = "system" if self._supports_system_role() else "user"
+        return [{"role": role, "content": content}]
+
+    def _read_tool_doc_by_name(self, state_name: str, tool_name: str) -> str:
+        doc_path = f'multi_agents/tools/ml_tools_doc/{state_name}_tools.md'
+        if not os.path.exists(doc_path):
+            return f"Tool documentation file not found for {tool_name}."
+        with open(doc_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        pattern = rf"(^##\s+{re.escape(tool_name)}\s*$.*?)(?=^##\s+|\Z)"
+        match = re.search(pattern, content, re.MULTILINE | re.DOTALL)
+        return match.group(1).strip() if match else f"Tool documentation not found for {tool_name}."
+
     def _gather_experience_with_suggestion(self, state: State) -> str:
         experience_with_suggestion = ""
         for i, each_state_memory in enumerate(state.memory[:-1]):
@@ -147,8 +164,7 @@ class Agent:
             reply_str = markdown_match.group(1).strip()
             return reply_str
         else:
-            logging.error("Failed to parse markdown from raw reply.")
-            pdb.set_trace()
+            logging.warning("Failed to parse fenced markdown from raw reply; using raw reply.")
             return raw_reply
 
     def _json_to_markdown(self, json_data):
@@ -187,11 +203,6 @@ class Agent:
         return md_output
 
     def _get_tools(self, state: State) -> Tuple[str, List[str]]:            
-        embeddings = OpenaiEmbeddings(api_key=load_api_config()[0], base_url=load_api_config()[1])
-        memory = RetrieveTool(self.llm, embeddings, doc_path='multi_agents/tools/ml_tools_doc', collection_name='tools')
-        # update the memory
-        memory.create_db_tools()
-
         state_name = state.dir_name
         with open('multi_agents/config.json', 'r') as file:
             phase_to_dir = [key for key, value in json.load(file)['phase_to_directory'].items() if value == state_name][0]
@@ -212,9 +223,20 @@ class Agent:
             tool_names = all_tool_names
 
         tools = []
-        for tool_name in tool_names:
-            conclusion = memory.query_tools(f'Use the {tool_name} tool.', state_name)
-            tools.append(conclusion)
+        if os.getenv('AUTOKAGGLE_DISABLE_TOOL_RAG', '').lower() in {'1', 'true', 'yes'}:
+            tools = [self._read_tool_doc_by_name(state_name, tool_name) for tool_name in tool_names]
+        else:
+            try:
+                api_key, base_url = load_api_config()
+                embeddings = OpenaiEmbeddings(api_key=api_key, base_url=base_url)
+                memory = RetrieveTool(self.llm, embeddings, doc_path='multi_agents/tools/ml_tools_doc', collection_name='tools')
+                memory.create_db_tools()
+                for tool_name in tool_names:
+                    conclusion = memory.query_tools(f'Use the {tool_name} tool.', state_name)
+                    tools.append(conclusion)
+            except Exception as exc:
+                logger.warning(f"Tool RAG failed, falling back to local markdown docs: {exc}")
+                tools = [self._read_tool_doc_by_name(state_name, tool_name) for tool_name in tool_names]
 
         if self.role == 'developer' and state.phase in ['Data Cleaning', 'Feature Engineering', 'Model Building, Validation, and Prediction']:  
             with open(f'{state.restore_dir}/tools_used_in_{state.dir_name}.md', 'w') as file:
@@ -276,4 +298,3 @@ class Agent:
 
     def _execute(self, state: State, role_prompt: str) -> Dict[str, Any]:
         raise NotImplementedError("Subclasses should implement this!")
-

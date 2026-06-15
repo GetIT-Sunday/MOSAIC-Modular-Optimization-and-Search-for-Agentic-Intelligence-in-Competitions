@@ -1,11 +1,19 @@
-# AutoKaggle
+# MOSAIC
+
+**Modular Optimization and Search for Agentic Intelligence in Competitions**
+
+MOSAIC is a modular multi-agent framework for autonomous data science competitions. Inspired by AutoKaggle, MOSAIC extends the competition workflow beyond tabular pipelines by introducing profile-driven task identification, a Brain-Coding agent control loop, remote execution isolation, structured experiment memory, validation gates, risk auditing, and leaderboard-feedback-driven optimization.
+
+This repository builds on the original AutoKaggle codebase and is being reorganized for collaborative research and development.
+
+## AutoKaggle Background
 
 This is the formal repo for paper: "AutoKaggle: A Multi-Agent Framework for Autonomous Data Science Competitions"
 
 <p align="center">
     <a href="https://m-a-p.ai/AutoKaggle.github.io/"><img src="https://img.shields.io/badge/🏠-Home Page-8A2BE2"></a>
     <a href="https://arxiv.org/abs/2410.20424.pdf"><img src="https://img.shields.io/badge/Paper-Arxiv-red"></a>
-    <a href="https://github.com/multimodal-art-projection/AutoKaggle/blob/main/LICENSE.md"><img src="https://img.shields.io/badge/LICENSE-Apache--2.0-green"></a>
+    <a href="https://github.com/GetIT-Sunday/MOSAIC-Modular-Optimization-and-Search-for-Agentic-Intelligence-in-Competitions/blob/main/LICENSE.md"><img src="https://img.shields.io/badge/LICENSE-Apache--2.0-green"></a>
 </p>
 
 ![kaggle_main](./mdPICs/kaggle_main.png)
@@ -21,19 +29,19 @@ AutoKaggle is a powerful framework that assists data scientists in completing da
 
 ![unit_test](./mdPICs/unit_test.png)
 
-## Quick Start with AutoKaggle
+## Quick Start with MOSAIC
 
 ### Set Environment
 
 1. Clone the repository
 ```bash
-git clone https://github.com/multimodal-art-projection/AutoKaggle.git
+git clone https://github.com/GetIT-Sunday/MOSAIC-Modular-Optimization-and-Search-for-Agentic-Intelligence-in-Competitions.git
 ```
 
 2. Create and activate conda environment
 ```bash
-conda create -n AutoKaggle python=3.11
-conda activate AutoKaggle
+conda create -n mosaic python=3.11
+conda activate mosaic
 ```
 
 3. Install dependencies
@@ -61,9 +69,9 @@ competition/
 
 overview.txt: Copy and paste the Overview and Data sections from the Kaggle competition homepage into this file. The `Reader` will read this file to summarize relevant information.
 
-### Running AutoKaggle
+### Running MOSAIC
 
-To run AutoKaggle experiments, use the following command:
+To run MOSAIC experiments, use the following command:
 
 ```bash
 bash run_multi_agent.sh

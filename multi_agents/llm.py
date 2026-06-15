@@ -21,9 +21,9 @@ class LLM:
         return multi_chat(self.api_handler, prompt, history, max_completion_tokens)
     
 class OpenaiEmbeddings:
-    def __init__(self, api_key: str, base_url: str = None, model: str = 'text-embedding-3-large'):
+    def __init__(self, api_key: str, base_url: str = None, model: str = None):
         self.client = OpenAI(api_key=api_key, base_url=base_url)
-        self.model = model
+        self.model = model or os.getenv('AUTOKAGGLE_EMBEDDING_MODEL', 'text-embedding-3-large')
 
         
     def num_tokens_from_string(string: str, encoding_name: str = 'cl100k_base') -> int:

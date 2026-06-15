@@ -30,7 +30,7 @@ class ImageToTextTool:
         images_to_descriptions = {}
         for image in chosed_images:
             image_path = f"{state.restore_dir}/images/{image}"
-            reply = read_image(input, image_path)
+            reply = read_image(input, image_path, model=self.llm.api_handler.model)
             images_to_descriptions[image] = reply
 
         return images_to_descriptions
