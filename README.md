@@ -1,97 +1,148 @@
-# MOSAIC
-
-**Modular Optimization and Search for Agentic Intelligence in Competitions**
-
-MOSAIC is a modular multi-agent framework for autonomous data science competitions. Inspired by AutoKaggle, MOSAIC extends the competition workflow beyond tabular pipelines by introducing profile-driven task identification, a Brain-Coding agent control loop, remote execution isolation, structured experiment memory, validation gates, risk auditing, and leaderboard-feedback-driven optimization.
-
-This repository builds on the original AutoKaggle codebase and is being reorganized for collaborative research and development.
-
-## AutoKaggle Background
-
-This is the formal repo for paper: "AutoKaggle: A Multi-Agent Framework for Autonomous Data Science Competitions"
-
+<a name="mosaic"></a>
 <p align="center">
-    <a href="https://m-a-p.ai/AutoKaggle.github.io/"><img src="https://img.shields.io/badge/🏠-Home Page-8A2BE2"></a>
-    <a href="https://arxiv.org/abs/2410.20424.pdf"><img src="https://img.shields.io/badge/Paper-Arxiv-red"></a>
-    <a href="https://github.com/GetIT-Sunday/MOSAIC-Modular-Optimization-and-Search-for-Agentic-Intelligence-in-Competitions/blob/main/LICENSE.md"><img src="https://img.shields.io/badge/LICENSE-Apache--2.0-green"></a>
+  <img src="assets/banner.png" alt="MOSAIC banner" width="100%">
 </p>
 
-![kaggle_main](./mdPICs/kaggle_main.png)
+<p align="center">
+  <h1 align="center">🧩 MOSAIC</h1>
+  <p align="center">
+    <strong>Modular Optimization and Search for Agentic Intelligence in Competitions</strong><br>
+    <em>模块化多智能体数据科学竞赛框架</em>
+  </p>
+  <p align="center">
+    <a href="#-introduction">Introduction</a> •
+    <a href="#-quick-start">Quick Start</a> •
+    <a href="#-results">Results</a> •
+    <a href="#-configuration">Configuration</a> •
+    <a href="#-citation">Citation</a>
+  </p>
+</p>
 
-## Introduction
+<p align="center">
+  <a href="https://m-a-p.ai/AutoKaggle.github.io/"><img src="https://img.shields.io/badge/🏠-Home Page-8A2BE2?style=flat-square" alt="Home Page"></a>
+  <a href="https://arxiv.org/abs/2410.20424"><img src="https://img.shields.io/badge/Paper-arXiv-red?style=flat-square" alt="arXiv Paper"></a>
+  <img src="https://img.shields.io/badge/license-Apache--2.0-green?style=flat-square" alt="License">
+  <img src="https://img.shields.io/badge/python-3.11+-yellow?style=flat-square" alt="Python">
+  <img src="https://img.shields.io/github/stars/GetIT-Sunday/MOSAIC-Modular-Optimization-and-Search-for-Agentic-Intelligence-in-Competitions?style=social" alt="Stars">
+</p>
 
-AutoKaggle is a powerful framework that assists data scientists in completing data science pipelines through a collaborative multi-agent system. The framework combines iterative development, comprehensive testing, and a machine learning tools library to automate Kaggle competitions while maintaining high customizability. The key features of AutoKaggle include:
+<p align="center">
+  <strong>English</strong> | <a href="README_ZH.md">中文</a>
+</p>
 
-- **Multi-agent Collaboration**: Five specialized agents (`Reader`, `Planner`, `Developer`, `Reviewer`, and `Summarizer`) work together through six key competition phases.
-- **Iterative Development and Unit Testing**: Robust code verification through debugging and comprehensive unit testing.
-- **ML Tools Library**: Validated functions for data cleaning, feature engineering, and modeling.
-- **Comprehensive Reporting**: Detailed documentation of workflow and decision-making processes.
+---
 
-![unit_test](./mdPICs/unit_test.png)
+## 📖 Introduction
 
-## Quick Start with MOSAIC
+MOSAIC is a modular multi-agent framework for autonomous data science competitions. Built on the AutoKaggle foundation, MOSAIC extends the competition workflow beyond tabular pipelines with:
 
-### Set Environment
+<table>
+  <tr>
+    <td width="50%">
+      <h3>🧠 Brain-Coding Loop</h3>
+      <ul>
+        <li>Profile-driven task identification</li>
+        <li>Brain-Coding agent control loop</li>
+        <li>Structured experiment memory</li>
+        <li>Leaderboard-feedback-driven optimization</li>
+      </ul>
+    </td>
+    <td width="50%">
+      <h3>🔒 Robust Execution</h3>
+      <ul>
+        <li>Remote execution isolation</li>
+        <li>Validation gates</li>
+        <li>Risk auditing</li>
+        <li>Comprehensive reporting</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <h3>👥 Multi-Agent Collaboration</h3>
+      <ul>
+        <li>5 specialized agents: Reader, Planner, Developer, Reviewer, Summarizer</li>
+        <li>6 key competition phases</li>
+        <li>Iterative development & unit testing</li>
+      </ul>
+    </td>
+    <td width="50%">
+      <h3>🛠️ ML Tools Library</h3>
+      <ul>
+        <li>Validated data cleaning functions</li>
+        <li>Feature engineering utilities</li>
+        <li>Modeling helpers</li>
+      </ul>
+    </td>
+  </tr>
+</table>
 
-1. Clone the repository
+<p align="center">
+  <img src="./mdPICs/kaggle_main.png" alt="MOSAIC main workflow" width="85%">
+</p>
+
+<div align="right"><a href="#mosaic">↑ back to top</a></div>
+
+---
+
+## 🚀 Quick Start
+
+**① Environment setup**
+
 ```bash
 git clone https://github.com/GetIT-Sunday/MOSAIC-Modular-Optimization-and-Search-for-Agentic-Intelligence-in-Competitions.git
-```
-
-2. Create and activate conda environment
-```bash
+cd MOSAIC-...
 conda create -n mosaic python=3.11
 conda activate mosaic
-```
-
-3. Install dependencies
-```bash
 pip install -r requirements.txt
 ```
 
-4. Configure OpenAI API
-Create `api_key.txt` with:
+**② Configure API key**
+
+Create `api_key.txt`:
 ```
 sk-xxx                           # Your API key
 https://api.openai.com/v1       # Base URL
 ```
 
-### Data Preparation
+**③ Prepare competition data**
 
-We support evaluation of Tabular-type datasets from Kaggle. Please Place competition data in `./multi_agents/competition/` with the following structure:
+Place Kaggle competition data in `./multi_agents/competition/`:
 ```
 competition/
 ├── train.csv
 ├── test.csv
 ├── sample_submission.csv
-└── overview.txt                 # Competition overview and data description
+└── overview.txt    # Copy Overview + Data sections from Kaggle competition page
 ```
 
-overview.txt: Copy and paste the Overview and Data sections from the Kaggle competition homepage into this file. The `Reader` will read this file to summarize relevant information.
-
-### Running MOSAIC
-
-To run MOSAIC experiments, use the following command:
+**④ Run MOSAIC**
 
 ```bash
 bash run_multi_agent.sh
 ```
 
-#### Configuration Parameters
+<div align="right"><a href="#mosaic">↑ back to top</a></div>
 
-- **Competition Selection**
-  - `competitions`: Define target competitions in the script
+---
 
-- **Experiment Control**
-  - `start_run`, `end_run`: Define experiment iterations (default: 1-5)
-  - `dest_dir_param`: Output directory specification (default: "all_tools")
+## ⚙️ Configuration
 
-- **Model Configuration**
-  - Default: `gpt-4o` for `Planner` and `Developer`, `gpt-4o-mini` for other agents
-  - `model` determines the base model of `Planner`
-  - Modify `_create_agent` in `multi_agents/sop.py` to change the base model of other agents
+<details>
+<summary><strong>Configuration parameters — click to expand</strong></summary>
+<br>
 
-#### Output Structure
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `competitions` | — | Target competition names |
+| `start_run` | 1 | Start run index |
+| `end_run` | 5 | End run index |
+| `dest_dir_param` | `"all_tools"` | Output directory label |
+| `model` | `gpt-4o` | Base model for Planner & Developer |
+
+Other agents default to `gpt-4o-mini`. To change them, modify `_create_agent` in `multi_agents/sop.py`.
+
+**Output structure:**
 ```
 multi_agents/experiments_history/
 └── <competition>/
@@ -100,38 +151,80 @@ multi_agents/experiments_history/
             └── <run_number>/
 ```
 
-## Result
+</details>
 
-We evaluated AutoKaggle across 8 diverse Kaggle competitions, achieving:
-- 85% validation submission rate
-- 0.82 comprehensive score
+<div align="right"><a href="#mosaic">↑ back to top</a></div>
 
-<div style="text-align: center;">
-    <img src="./mdPICs/main_results.png" class="result"
-    width="80%" />
-    <img src="./mdPICs/average_nps.png" class="result"
-    width="80%" />
-</div>
+---
 
-## Citation
+## 📊 Results
 
-```
+Evaluated across **8 diverse Kaggle competitions**:
+
+| Metric | Score |
+|--------|-------|
+| Validation Submission Rate | **85%** |
+| Comprehensive Score | **0.82** |
+
+<p align="center">
+  <img src="./mdPICs/main_results.png" alt="Main results" width="80%">
+  <img src="./mdPICs/average_nps.png" alt="Average NPS" width="80%">
+</p>
+
+<p align="center">
+  <img src="./mdPICs/unit_test.png" alt="Unit test workflow" width="80%">
+</p>
+
+<div align="right"><a href="#mosaic">↑ back to top</a></div>
+
+---
+
+## 📝 Citation
+
+```bibtex
 @misc{li2024autokagglemultiagentframeworkautonomous,
-      title={AutoKaggle: A Multi-Agent Framework for Autonomous Data Science Competitions}, 
-      author={Ziming Li and Qianbo Zang and David Ma and Jiawei Guo and Tianyu Zheng and Minghao liu and Xinyao Niu and Yue Wang and Jian Yang and Jiaheng Liu and Wanjun Zhong and Wangchunshu Zhou and Wenhao Huang and Ge Zhang},
-      year={2024},
-      eprint={2410.20424},
-      archivePrefix={arXiv},
-      primaryClass={cs.AI},
-      url={https://arxiv.org/abs/2410.20424}, 
+  title={AutoKaggle: A Multi-Agent Framework for Autonomous Data Science Competitions},
+  author={Ziming Li and Qianbo Zang and David Ma and Jiawei Guo and Tianyu Zheng and
+          Minghao liu and Xinyao Niu and Yue Wang and Jian Yang and Jiaheng Liu and
+          Wanjun Zhong and Wangchunshu Zhou and Wenhao Huang and Ge Zhang},
+  year={2024},
+  eprint={2410.20424},
+  archivePrefix={arXiv},
+  primaryClass={cs.AI},
+  url={https://arxiv.org/abs/2410.20424},
 }
 ```
 
-## Disclaimer
+<div align="right"><a href="#mosaic">↑ back to top</a></div>
 
-This project, "AutoKaggle," is not affiliated with, endorsed by, or officially associated with Kaggle or Google in any way. The use of the name "Kaggle" is solely to indicate compatibility with Kaggle competitions. All trademarks, logos, and brand names are the property of their respective owners. We respect Kaggle's brand guidelines and are in the process of rebranding to better reflect our independence. For further details or concerns, please contact us.
+---
 
+## 🤝 Contributing
 
-## License
+Contributions are welcome! Please feel free to open issues or submit pull requests.
 
-This project is licensed under the Apache 2.0 License - see the LICENSE file for details.
+<div align="right"><a href="#mosaic">↑ back to top</a></div>
+
+---
+
+## 📄 License
+
+Apache 2.0 License — see [LICENSE.md](LICENSE.md) for details.
+
+> **Disclaimer**: This project is not affiliated with, endorsed by, or officially associated with Kaggle or Google. The name "Kaggle" is used solely to indicate competition compatibility.
+
+---
+
+<p align="center">
+  <strong>⭐ If MOSAIC helped your research, please give it a Star!</strong>
+</p>
+
+<p align="center">
+  <a href="https://star-history.com/#GetIT-Sunday/MOSAIC-Modular-Optimization-and-Search-for-Agentic-Intelligence-in-Competitions&Date">
+    <img src="https://api.star-history.com/svg?repos=GetIT-Sunday/MOSAIC-Modular-Optimization-and-Search-for-Agentic-Intelligence-in-Competitions&type=Date" alt="Star History Chart" width="600">
+  </a>
+</p>
+
+<p align="center">
+  <sub>Made with ✨ by <a href="https://github.com/GetIT-Sunday">GetIT-Sunday</a> using <a href="https://github.com/GetIT-Sunday/ReadmeMagic-github-readme-design-skill">ReadmeMagic</a></sub>
+</p>
