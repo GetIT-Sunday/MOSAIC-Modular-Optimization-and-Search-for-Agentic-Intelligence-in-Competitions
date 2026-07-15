@@ -7,22 +7,22 @@
   <h1 align="center">🧩 MOSAIC</h1>
   <p align="center">
     <strong>Modular Optimization and Search for Agentic Intelligence in Competitions</strong><br>
-    <em>模块化多智能体数据科学竞赛框架</em>
+    <em>模块化多智能体竞赛智能优化框架</em>
   </p>
   <p align="center">
-    <a href="#-introduction">Introduction</a> •
+    <a href="#-overview">Overview</a> •
+    <a href="#-architecture">Architecture</a> •
     <a href="#-quick-start">Quick Start</a> •
-    <a href="#-results">Results</a> •
-    <a href="#-configuration">Configuration</a> •
-    <a href="#-citation">Citation</a>
+    <a href="#%EF%B8%8F-cli-reference">CLI Reference</a> •
+    <a href="#-roadmap">Roadmap</a>
   </p>
 </p>
 
 <p align="center">
-  <a href="https://m-a-p.ai/AutoKaggle.github.io/"><img src="https://img.shields.io/badge/🏠-Home Page-8A2BE2?style=flat-square" alt="Home Page"></a>
-  <a href="https://arxiv.org/abs/2410.20424"><img src="https://img.shields.io/badge/Paper-arXiv-red?style=flat-square" alt="arXiv Paper"></a>
+  <img src="https://img.shields.io/badge/status-active%20research-blueviolet?style=flat-square" alt="Status">
   <img src="https://img.shields.io/badge/license-Apache--2.0-green?style=flat-square" alt="License">
   <img src="https://img.shields.io/badge/python-3.11+-yellow?style=flat-square" alt="Python">
+  <img src="https://img.shields.io/badge/agents-Brain%20%2B%20Coding-00d4ff?style=flat-square" alt="Agents">
   <img src="https://img.shields.io/github/stars/GetIT-Sunday/MOSAIC-Modular-Optimization-and-Search-for-Agentic-Intelligence-in-Competitions?style=social" alt="Stars">
 </p>
 
@@ -32,54 +32,73 @@
 
 ---
 
-## 📖 Introduction
+## 📖 Overview
 
-MOSAIC is a modular multi-agent framework for autonomous data science competitions. Built on the AutoKaggle foundation, MOSAIC extends the competition workflow beyond tabular pipelines with:
+MOSAIC is a **modular multi-agent framework** for autonomous participation in data science competitions. The core design goal: a general-purpose competition intelligence layer that handles the full lifecycle — from competition intake to experiment planning, remote execution, validation, and leaderboard-feedback-driven optimization.
+
+> **Research in progress.** MOSAIC is actively being developed toward silver-medal-level autonomous performance on real Kaggle competitions.
 
 <table>
   <tr>
     <td width="50%">
-      <h3>🧠 Brain-Coding Loop</h3>
+      <h3>🧠 Brain–Coding Agent Loop</h3>
       <ul>
-        <li>Profile-driven task identification</li>
-        <li>Brain-Coding agent control loop</li>
-        <li>Structured experiment memory</li>
-        <li>Leaderboard-feedback-driven optimization</li>
+        <li>Brain Agent: reads competition overview, selects profile, plans experiment ladder</li>
+        <li>Coding Agent: writes scripts, runs experiments, debugs, reports metrics back to Brain</li>
+        <li>Narrow task handoff — Brain never writes code; Coding Agent never makes strategy calls</li>
       </ul>
     </td>
     <td width="50%">
-      <h3>🔒 Robust Execution</h3>
+      <h3>🗂️ Competition Profile System</h3>
       <ul>
-        <li>Remote execution isolation</li>
-        <li>Validation gates</li>
-        <li>Risk auditing</li>
-        <li>Comprehensive reporting</li>
+        <li>Profile-driven task identification: <code>tabular_classic</code>, <code>image_classification</code>, <code>nlp_text_classification</code>, <code>time_series_forecasting</code>, and more</li>
+        <li>Each profile defines lifecycle phases, metric type, submission format, allowed tool families, and validation checks</li>
       </ul>
     </td>
   </tr>
   <tr>
     <td width="50%">
-      <h3>👥 Multi-Agent Collaboration</h3>
+      <h3>🔒 Remote Execution Isolation</h3>
       <ul>
-        <li>5 specialized agents: Reader, Planner, Developer, Reviewer, Summarizer</li>
-        <li>6 key competition phases</li>
-        <li>Iterative development & unit testing</li>
+        <li>Local Mac as control plane + Brain</li>
+        <li>Remote Linux as isolated experiment executor</li>
+        <li>Sync scripts: <code>sync_to_dev.sh</code> / <code>sync_from_dev.sh</code></li>
+        <li>Conda environment pinned per workspace</li>
       </ul>
     </td>
     <td width="50%">
-      <h3>🛠️ ML Tools Library</h3>
+      <h3>📊 Structured Experiment Memory</h3>
       <ul>
-        <li>Validated data cleaning functions</li>
-        <li>Feature engineering utilities</li>
-        <li>Modeling helpers</li>
+        <li>Run Ledger: per-competition HTML control panel</li>
+        <li>CV score, leaderboard feedback, and failure modes stored per run</li>
+        <li>Brain uses history to plan the next improvement cycle</li>
+        <li>Human Gate before any real competition submission</li>
       </ul>
     </td>
   </tr>
 </table>
 
-<p align="center">
-  <img src="./mdPICs/kaggle_main.png" alt="MOSAIC main workflow" width="85%">
-</p>
+<div align="right"><a href="#mosaic">↑ back to top</a></div>
+
+---
+
+## 🏗️ Architecture
+
+```
+framework.py (entry point)
+├── CompetitionIntakeAgent    — parse competition overview, data manifest, metric spec, task card
+├── KaggleDiscoveryAgent      — fetch real competition pool via Kaggle CLI
+├── Brain Agent               — orchestrator: profile selection, experiment ladder, task dispatch
+│   └── Coding Agent          — implementation: write → run → debug → report
+├── Validator                 — submission format check, CV gate, leaderboard feedback ingestion
+├── Run Ledger                — HTML control panel per competition (runs/index.html)
+└── Remote Execution Layer
+    ├── scripts/sync_to_dev.sh
+    ├── scripts/sync_from_dev.sh
+    └── scripts/remote_dev.sh
+```
+
+**Multi-agent SOP** (`multi_agents/sop.py`) coordinates domain profiles, tools, prompts, memory, and orchestration layers.
 
 <div align="right"><a href="#mosaic">↑ back to top</a></div>
 
@@ -101,55 +120,72 @@ pip install -r requirements.txt
 
 Create `api_key.txt`:
 ```
-sk-xxx                           # Your API key
-https://api.openai.com/v1       # Base URL
+sk-xxx                           # Your LLM API key
+https://api.openai.com/v1        # Base URL (or any OpenAI-compatible endpoint)
 ```
 
-**③ Prepare competition data**
+**③ Check configuration**
 
-Place Kaggle competition data in `./multi_agents/competition/`:
+```bash
+python framework.py --config-check
+python framework.py --remote-health-check   # if using remote execution
 ```
-competition/
+
+**④ Prepare competition data**
+
+```
+multi_agents/competition/<competition_name>/
 ├── train.csv
 ├── test.csv
 ├── sample_submission.csv
-└── overview.txt    # Copy Overview + Data sections from Kaggle competition page
+└── overview.txt    # Competition overview + data description
 ```
 
-**④ Run MOSAIC**
+**⑤ Run MOSAIC**
 
 ```bash
-bash run_multi_agent.sh
+# Single competition, single run
+python framework.py --competition titanic
+
+# Full benchmark (all competitions, 5 runs each)
+bash run_multi_agents.sh
+```
+
+**⑥ View results**
+
+```bash
+python framework.py --project-control-panel
+# Opens runs/index.html — the Run Ledger control panel
 ```
 
 <div align="right"><a href="#mosaic">↑ back to top</a></div>
 
 ---
 
-## ⚙️ Configuration
+## 🛠️ CLI Reference
 
 <details>
-<summary><strong>Configuration parameters — click to expand</strong></summary>
+<summary><strong>All framework.py flags — click to expand</strong></summary>
 <br>
 
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `competitions` | — | Target competition names |
-| `start_run` | 1 | Start run index |
-| `end_run` | 5 | End run index |
-| `dest_dir_param` | `"all_tools"` | Output directory label |
-| `model` | `gpt-4o` | Base model for Planner & Developer |
-
-Other agents default to `gpt-4o-mini`. To change them, modify `_create_agent` in `multi_agents/sop.py`.
-
-**Output structure:**
-```
-multi_agents/experiments_history/
-└── <competition>/
-    └── <model>/
-        └── <dest_dir_param>/
-            └── <run_number>/
-```
+| Flag | Description |
+|------|-------------|
+| `--competition NAME` | Target competition name |
+| `--model MODEL` | Planner model, or `"config"` to use `multi_agents/config.json` |
+| `--task-card-mode` | Run Brain task-card dry loop |
+| `--competition-intake` | Parse competition and generate Brain-ready artifacts |
+| `--agent-baseline-start` | Intake + baseline + roadmap preparation |
+| `--run-baselines` | Run deterministic baseline experiments |
+| `--run-enhancement` | Run next uncompleted Brain-recommended experiment |
+| `--experiment-queue` | Build visible experiment queue |
+| `--experiment-roadmap` | Build prioritized next-action roadmap |
+| `--tabular-search` | Multi-model tabular search and blend |
+| `--tabular-risk-audit` | Audit CV stability and leaderboard risk |
+| `--tabular-leakage-audit` | Audit feature leakage, transform-scope risk, train/test drift |
+| `--remote-execution` | Execute on remote Linux via SSH |
+| `--config-check` | Check SSH, remote, LLM, and Kaggle config (no secrets printed) |
+| `--remote-health-check` | Remote diagnostics: SSH, workspace, conda, disk, GPU, Kaggle |
+| `--project-control-panel` | Generate global Run Ledger HTML |
 
 </details>
 
@@ -157,42 +193,44 @@ multi_agents/experiments_history/
 
 ---
 
-## 📊 Results
+## 🗺️ Roadmap
 
-Evaluated across **8 diverse Kaggle competitions**:
-
-| Metric | Score |
-|--------|-------|
-| Validation Submission Rate | **85%** |
-| Comprehensive Score | **0.82** |
-
-<p align="center">
-  <img src="./mdPICs/main_results.png" alt="Main results" width="80%">
-  <img src="./mdPICs/average_nps.png" alt="Average NPS" width="80%">
-</p>
-
-<p align="center">
-  <img src="./mdPICs/unit_test.png" alt="Unit test workflow" width="80%">
-</p>
+| Phase | Goal | Status |
+|-------|------|--------|
+| 0. Remote isolation | Mac control plane + remote Linux executor | ✅ Done |
+| 1. Run Ledger | Human-readable experiment state + Gate + feedback loop | ✅ Done |
+| 2. Kaggle competition pool | Real competition list via Kaggle CLI | ✅ Code complete |
+| 3. Competition intake | Parse objectives, data, metric, submission format | 🔄 In progress |
+| 4. Baseline loop | Reproducible sklearn / GBDT baseline pipeline | 🔄 In progress |
+| 5. Brain decision loop | Brain LLM plans models, features, task queue | 🔄 In progress |
+| 6. Tabular search | Multi-model search, blend, CV-LB gap analysis | 🔄 In progress |
+| 7. Silver-medal target | Real Kaggle submission, Human Gate, leaderboard feedback | 🎯 Target |
 
 <div align="right"><a href="#mosaic">↑ back to top</a></div>
 
 ---
 
-## 📝 Citation
+## 📁 Project Structure
 
-```bibtex
-@misc{li2024autokagglemultiagentframeworkautonomous,
-  title={AutoKaggle: A Multi-Agent Framework for Autonomous Data Science Competitions},
-  author={Ziming Li and Qianbo Zang and David Ma and Jiawei Guo and Tianyu Zheng and
-          Minghao liu and Xinyao Niu and Yue Wang and Jian Yang and Jiaheng Liu and
-          Wanjun Zhong and Wangchunshu Zhou and Wenhao Huang and Ge Zhang},
-  year={2024},
-  eprint={2410.20424},
-  archivePrefix={arXiv},
-  primaryClass={cs.AI},
-  url={https://arxiv.org/abs/2410.20424},
-}
+```
+MOSAIC/
+├── framework.py              # Main entry point
+├── multi_agents/
+│   ├── sop.py                # Multi-agent SOP coordinator
+│   ├── agents/               # Agent implementations
+│   ├── domain_profiles/      # Competition profile definitions
+│   ├── domain_tools/         # Tool libraries per domain
+│   ├── orchestration/        # ProjectControlPanel, Run Ledger
+│   ├── prompts/              # LLM prompt templates
+│   ├── memory.py             # Experiment memory layer
+│   └── skills/               # Reusable ML skill functions
+├── docs/                     # Architecture and roadmap docs
+├── scripts/
+│   ├── sync_to_dev.sh        # Push workspace to remote
+│   ├── sync_from_dev.sh      # Pull results from remote
+│   └── remote_dev.sh         # SSH remote execution wrapper
+├── tests/                    # Test suite
+└── requirements.txt
 ```
 
 <div align="right"><a href="#mosaic">↑ back to top</a></div>
@@ -201,7 +239,7 @@ Evaluated across **8 diverse Kaggle competitions**:
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to open issues or submit pull requests.
+Research collaborations and contributions welcome — open an issue or PR.
 
 <div align="right"><a href="#mosaic">↑ back to top</a></div>
 
@@ -209,14 +247,12 @@ Contributions are welcome! Please feel free to open issues or submit pull reques
 
 ## 📄 License
 
-Apache 2.0 License — see [LICENSE.md](LICENSE.md) for details.
-
-> **Disclaimer**: This project is not affiliated with, endorsed by, or officially associated with Kaggle or Google. The name "Kaggle" is used solely to indicate competition compatibility.
+Apache 2.0 — see [LICENSE.md](LICENSE.md) for details.
 
 ---
 
 <p align="center">
-  <strong>⭐ If MOSAIC helped your research, please give it a Star!</strong>
+  <strong>⭐ If MOSAIC interests you, give it a Star — it helps the research reach more people.</strong>
 </p>
 
 <p align="center">
